@@ -6,7 +6,7 @@ import { SITE } from "@/data/site";
  *  Sign up free at https://formspree.io, create a form pointed at agcs.paints@gmail.com,
  *  and paste the 8-character ID here (e.g. "xyzabcde").
  */
-const FORMSPREE_ID = "xyyrbqkg";
+const FORMSPREE_ID = "xljbayva";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
