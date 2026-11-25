@@ -2,21 +2,24 @@ import { useEffect, useId, useState, type FormEvent } from "react";
 import { useLocation } from "@/lib/router";
 import { SITE } from "@/data/site";
 
-interface Submitted {
-  name: string;
-  whatsapp: string;
-  mail: string;
-}
+/** Formspree form endpoint — replace YOUR_FORM_ID with your real Formspree form ID.
+ *  Sign up free at https://formspree.io, create a form pointed at agcs.paints@gmail.com,
+ *  and paste the 8-character ID here (e.g. "xyzabcde").
+ */
+const FORMSPREE_ID = "xyyrbqkg";
+
+type Status = "idle" | "sending" | "sent" | "error";
 
 const field =
   "h-[46px] w-full rounded-full border border-neutral-300 bg-white px-[30px] text-sm text-ink outline-none transition placeholder:text-neutral-500 focus:border-brand focus:ring-4 focus:ring-brand/12";
 
 /**
- * Enquiry form used on the Contact and About pages. There is no server behind this site, so
- * submitting prepares a ready-to-send WhatsApp message and email instead.
+ * Enquiry form used on the Contact and About pages.
+ * Submits directly to Formspree which emails the data to agcs.paints@gmail.com,
+ * and also offers WhatsApp as an alternative channel.
  */
 export default function EnquiryForm({
-  submitLabel = "Send",
+  submitLabel = "Send Message",
   className = "",
 }: {
   submitLabel?: string;
@@ -25,38 +28,56 @@ export default function EnquiryForm({
   const { search } = useLocation();
   const product = (new URLSearchParams(search).get("product") ?? "").trim();
   const id = useId();
-  const [done, setDone] = useState<Submitted | null>(null);
+  const [status, setStatus] = useState<Status>("idle");
+  const [whatsappUrl, setWhatsappUrl] = useState("");
   const prefilled = product
     ? `Hi AGCS Team, I would like pricing and availability details for Berger ${product}.`
     : "";
   const [message, setMessage] = useState(prefilled);
   useEffect(() => setMessage(prefilled), [prefilled]);
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
     const name = String(data.get("name") ?? "").trim();
+    const phone = String(data.get("phone") ?? "").trim();
+    const email = String(data.get("email") ?? "").trim();
+    const note = String(data.get("message") ?? "").trim();
+
+    // Build WhatsApp fallback URL
     const lines = [
       "Hello AGCS Team,",
       `Name: ${name}`,
-      `Phone: ${String(data.get("phone") ?? "").trim()}`,
-      `Email: ${String(data.get("email") ?? "").trim()}`,
+      `Phone: ${phone}`,
+      `Email: ${email}`,
     ];
     if (product) lines.push(`Product: ${product}`);
-    const note = String(data.get("message") ?? "").trim();
     if (note) lines.push(`Message: ${note}`);
-    const text = lines.join("\n");
-    const subject = product
-      ? `Product Enquiry: ${product} – ${name}`
-      : `Website Enquiry from ${name}`;
-    setDone({
-      name,
-      whatsapp: `https://wa.me/918124936369?text=${encodeURIComponent(text)}`,
-      mail: `mailto:${SITE.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`,
-    });
-    form.reset();
-    setMessage("");
+    setWhatsappUrl(`https://wa.me/918124936369?text=${encodeURIComponent(lines.join("\n"))}`);
+
+    // Send via Formspree → email delivered to agcs.paints@gmail.com
+    setStatus("sending");
+    try {
+      const payload: Record<string, string> = { name, phone, email, message: note };
+      if (product) payload["product"] = product;
+
+      const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        setStatus("sent");
+        form.reset();
+        setMessage("");
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
   };
 
   return (
@@ -124,39 +145,86 @@ export default function EnquiryForm({
         </div>
         <button
           type="submit"
-          className="h-12 w-full rounded-full bg-ink text-[15px] font-semibold text-white transition hover:-translate-y-px hover:bg-gradient-to-br hover:from-brand hover:to-pink"
+          disabled={status === "sending"}
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-[15px] font-semibold text-white transition hover:-translate-y-px hover:bg-gradient-to-br hover:from-brand hover:to-pink disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {submitLabel}
+          {status === "sending" ? (
+            <>
+              <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+              </svg>
+              Sending…
+            </>
+          ) : (
+            submitLabel
+          )}
         </button>
       </form>
 
-      {done && (
+      {/* Success banner */}
+      {status === "sent" && (
         <div
           role="status"
-          className="mt-4 rounded-[18px] border border-brand/20 bg-gradient-to-br from-[#fdf8ff] to-[#fff9ec] p-5 shadow-[0_12px_30px_-14px_rgba(118,45,151,.2)]"
+          className="mt-4 rounded-[18px] border border-green-200 bg-gradient-to-br from-[#f0fdf4] to-[#dcfce7] p-5 shadow-[0_12px_30px_-14px_rgba(22,163,74,.15)]"
         >
-          <h4 className="mb-1.5 text-[16.5px] font-bold text-ink">
-            Thank you, {done.name || "there"}! Your enquiry is ready.
+          <h4 className="mb-1 text-[16.5px] font-bold text-green-800">
+            ✅ Message sent! We'll be in touch soon.
           </h4>
-          <p className="mb-3.5 text-[13.5px] leading-relaxed text-[#4b5563]">
-            Connect instantly with our Arumbakkam showroom team via WhatsApp or Email below with
-            your pre-filled enquiry details, or call us directly at {SITE.phone}.
+          <p className="mb-3.5 text-[13.5px] leading-relaxed text-green-700">
+            Your enquiry has been delivered to <strong>agcs.paints@gmail.com</strong>.
+            You can also reach us instantly on WhatsApp or call {SITE.phone}.
           </p>
           <div className="flex flex-wrap gap-2.5">
             <a
-              href={done.whatsapp}
+              href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-full bg-[#16a34a] px-4 py-2.5 text-[12.5px] font-bold text-white transition hover:-translate-y-px"
             >
-              Send via WhatsApp →
+              Chat on WhatsApp →
             </a>
-            <a
-              href={done.mail}
-              className="rounded-full bg-ink px-4 py-2.5 text-[12.5px] font-bold text-white transition hover:-translate-y-px"
+            <button
+              onClick={() => setStatus("idle")}
+              className="rounded-full border border-green-700 px-4 py-2.5 text-[12.5px] font-bold text-green-700 transition hover:-translate-y-px hover:bg-green-700 hover:text-white"
             >
-              Send via Email →
+              Send another message
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Error banner */}
+      {status === "error" && (
+        <div
+          role="alert"
+          className="mt-4 rounded-[18px] border border-red-200 bg-red-50 p-5"
+        >
+          <h4 className="mb-1 text-[15px] font-bold text-red-700">
+            ⚠️ Couldn't send your message.
+          </h4>
+          <p className="mb-3 text-[13px] leading-relaxed text-red-600">
+            Please try WhatsApp or email us directly at{" "}
+            <a href={`mailto:${SITE.email}`} className="underline">
+              {SITE.email}
             </a>
+            .
+          </p>
+          <div className="flex flex-wrap gap-2.5">
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full bg-[#16a34a] px-4 py-2.5 text-[12.5px] font-bold text-white transition hover:-translate-y-px"
+            >
+              Chat on WhatsApp →
+            </a>
+            <button
+              onClick={() => setStatus("idle")}
+              className="rounded-full border border-red-400 px-4 py-2.5 text-[12.5px] font-bold text-red-600 transition hover:bg-red-600 hover:text-white"
+            >
+              Try again
+            </button>
           </div>
         </div>
       )}
