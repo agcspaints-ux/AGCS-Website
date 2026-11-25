@@ -55,13 +55,13 @@ export const TRANSFORMATION_TILES = [
     title: "Interior Paints",
     caption: "Living Room",
     to: "/interior-emulsion",
-    image: "/images/photos/living-room.webp",
+    image: "/images/photos/living-room.jpg",
   },
   {
     title: "Exterior Paints",
     caption: "Villa",
     to: "/exterior-emulsion",
-    image: "/images/photos/house-exterior.webp",
+    image: "/images/photos/house-exterior.jpg",
   },
   {
     title: "Wood Coating",

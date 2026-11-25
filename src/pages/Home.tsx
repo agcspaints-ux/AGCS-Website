@@ -138,7 +138,7 @@ function About() {
         <Reveal>
           <div className="relative overflow-hidden rounded-[28px] sm:rounded-[36px]">
             <img
-              src="/images/photos/colour-swatches.webp"
+              src="/images/photos/colour-swatches.jpg"
               alt="Paint colour swatches being reviewed"
               loading="lazy"
               className="aspect-[5/6] w-full object-cover"

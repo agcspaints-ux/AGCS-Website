@@ -17,7 +17,7 @@ const HEROES: Record<string, Omit<HeroConfig, "cta">> = {
     position: "right center",
   },
   "enamel-metal-primer": {
-    image: "/images/photos/wood-sculptures.webp",
+    image: "/images/heroes/enamel-metal-primer.jpg",
     title: "High-Performance Enamel & Metal Primer for Superior Protection & Finish",
     subtitle: "Luxurious Shine, Lasting Protection",
     align: "center",
@@ -38,7 +38,7 @@ const HEROES: Record<string, Omit<HeroConfig, "cta">> = {
     position: "left bottom",
   },
   "exterior-emulsion": {
-    image: "/images/heroes/exterior-emulsion.webp",
+    image: "/images/heroes/exterior-emulsion.png",
     title: "Premium Exterior Emulsion Paints for Lasting Beauty & Protection",
     subtitle: "Explore our range of Luxury, Premium & Economy Emulsions",
     position: "left bottom",
