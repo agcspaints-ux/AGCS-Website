@@ -160,7 +160,7 @@ function About() {
           </p>
           <div className="mt-8 flex items-center gap-4 border-t border-ink/20 pt-8">
             <img
-              src="/images/people/anu-varshini.webp"
+              src="/images/people/anu-varshini.jpg"
               alt="Anu Varshini, owner"
               width={64}
               height={64}
@@ -204,7 +204,7 @@ function WhyChoose() {
         </div>
         <Reveal>
           <img
-            src="/images/photos/couple-choosing-colour.webp"
+            src="/images/photos/couple-choosing-colour.jpg"
             alt="A couple choosing paint colours together"
             loading="lazy"
             className="aspect-[4/5] w-full object-cover"

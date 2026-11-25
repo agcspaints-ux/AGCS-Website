@@ -67,7 +67,7 @@ export const TRANSFORMATION_TILES = [
     title: "Wood Coating",
     caption: "Furniture",
     to: "/wood-coating",
-    image: "/images/photos/wood-sculptures.webp",
+    image: "/images/photos/wood-sculptures.jpg",
   },
   {
     title: "Enamel & Metal Primer",

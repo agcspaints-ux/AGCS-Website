@@ -35,7 +35,7 @@ export default function About() {
             </p>
             <div className="mt-8 flex items-center gap-4 border-t border-ink/20 pt-8">
               <img
-                src="/images/people/anu-varshini.webp"
+                src="/images/people/anu-varshini.jpg"
                 alt="Anu Varshini, owner"
                 width={64}
                 height={64}
