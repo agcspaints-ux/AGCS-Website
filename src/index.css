@@ -1,0 +1,96 @@
+@import url("https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+@import "./styles/showcase.css";
+
+@theme {
+  --font-sans: "Epilogue", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --color-ink: #111318;
+  --color-brand: #762d97;
+  --color-pink: #d9468f;
+  --color-lilac: #f4e8ff;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: #fff;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: rgba(118, 45, 151, 0.18);
+  }
+}
+
+@layer components {
+  /* gradient accent used for the highlighted word in headings */
+  .text-gradient {
+    background-color: #a855f7;
+    background-image: url("/images/textures/gradient-purple.webp");
+    background-size: cover;
+    background-position: center;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes agcs-zoom-out {
+  from {
+    transform: scale(1.22);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+.agcs-zoom-out {
+  animation: agcs-zoom-out 8.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes progress {
+  0% {
+    width: 0;
+  }
+  60% {
+    width: 72%;
+  }
+  100% {
+    width: 92%;
+  }
+}

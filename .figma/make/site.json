@@ -1,0 +1,12 @@
+{
+  "title": "AGCS \u2013 Abundancia Global ColorS | Authorised Berger Paints Distributor in Chennai",
+  "description": "Publishes a project or website online, making it accessible to users through a live link.",
+  "language": "en",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
